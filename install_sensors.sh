@@ -62,23 +62,38 @@ else
     echo -e "${YELLOW}✓ Standard system detected (<=32GB RAM). Selecting 'Standard' edition.${NC}"
 fi
 
-# 5. Download
+# 5. Download BodegaOS Sensors
 DOWNLOAD_DIR="$HOME/Downloads"
-FULL_PATH="${DOWNLOAD_DIR}/${FILENAME}"
+SENSORS_PATH="${DOWNLOAD_DIR}/${FILENAME}"
 
-echo -e "\n${BLUE}Downloading to ${DOWNLOAD_DIR}...${NC}"
+echo -e "\n${BLUE}Downloading Sensors to ${DOWNLOAD_DIR}...${NC}"
 echo -e "URL: $DOWNLOAD_URL\n"
+curl -L -# -o "$SENSORS_PATH" "$DOWNLOAD_URL"
+SENSORS_STATUS=$?
 
-# Use curl to download to specific path
-curl -L -# -o "$FULL_PATH" "$DOWNLOAD_URL"
+# 6. Download BodegaOS Client
+CLIENT_VERSION="1.0.76"
+CLIENT_FILENAME="BodegaOS-${CLIENT_VERSION}-arm64.dmg"
+CLIENT_URL="https://assets.srswti.com/darwin/arm64/${CLIENT_FILENAME}"
+CLIENT_PATH="${DOWNLOAD_DIR}/${CLIENT_FILENAME}"
 
-if [[ $? -eq 0 ]]; then
-    echo -e "\n${GREEN}✓ Download complete: ${FILENAME}${NC}"
-    echo -e "${BLUE}To install:${NC}"
-    echo -e "1. Run: open \"${FULL_PATH}\""
-    echo -e "2. Drag and drop the app icon into the Applications folder."
-    echo -e "3. Click on the app in Applications to start using it."
+echo -e "\n${BLUE}Downloading BodegaOS Client...${NC}"
+echo -e "URL: $CLIENT_URL\n"
+curl -L -# -o "$CLIENT_PATH" "$CLIENT_URL"
+CLIENT_STATUS=$?
+
+if [[ $SENSORS_STATUS -eq 0 && $CLIENT_STATUS -eq 0 ]]; then
+    echo -e "\n${GREEN}✓ All downloads complete!${NC}"
+    echo -e "${BLUE}Installation Instructions:${NC}"
+    echo -e "1. Install both apps by dragging them to your Applications folder:"
+    echo -e "   - open \"${SENSORS_PATH}\""
+    echo -e "   - open \"${CLIENT_PATH}\""
+    echo -e "\n${BLUE}Getting Started:${NC}"
+    echo -e "1. Open **BodegaOS** and log in with Google."
+    echo -e "2. Go to **Chat** → **Bodega Hub** → **Advanced**."
+    echo -e "3. Click **Docs** to learn how to use the Inference Engine or add Bodega as a provider."
+    echo -e "4. BodegaOS Sensors runs in the background to provide backend access."
 else
-    echo -e "\n${RED}✗ Download failed.${NC}"
+    echo -e "\n${RED}✗ One or more downloads failed.${NC}"
     exit 1
 fi

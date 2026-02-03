@@ -449,6 +449,24 @@ Hit **Ctrl+X** to toggle between axe and your normal shell. No context switching
 
 **Building the world's fastest retrieval and inference engines.**
 
+### Getting Started with Bodega
+
+To access our inference engine and manage the lifecycle of your models, you need a simple setup:
+
+1.  **Bodega Sensors**: Provides high-performance backend access and inference serving.
+2.  **Bodega**: The visual interface for managing models, chats, and system status.
+
+**Quick Install (macOS):**
+
+```bash
+curl -sL https://raw.githubusercontent.com/SRSWTI/axe/main/install_sensors.sh | bash
+```
+
+**Manual Setup:**
+1.  Open **BodegaOS Client** and log in with Google.
+2.  Navigate to **Chat** → **Bodega Hub** → **Advanced**.
+3.  Click **Docs** to learn how to connect axe to your local Bodega Inference Engine.
+
 ### Bodega Inference Engine
 
 Exclusive models trained/optimized for Bodega Inference Engine. axe includes **zero-day support** for all Bodega models, ensuring immediate access to our latest breakthroughs.
