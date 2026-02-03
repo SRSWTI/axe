@@ -22,7 +22,7 @@ And with that constraint in mind, they ask a different question entirely:
 
 ---
 
-## The Real Engineering Challenge
+## 
 
 **Idea creation is a human trait.** Ideas arise from impulsive feelings, obstacles we encounter, problems we want to solve. Creating something new is exciting, visceral, immediate.
 
@@ -515,6 +515,8 @@ Our internal team has been using features that will change the game:
 Understanding code isn't just about reading—it's about **seeing** the structure, connections, and flow.
 
 The dashboard provides real-time visualization for:
+
+![dashboard visualization](assets/axe_gif_axe_future.gif)
 
 **Code Health Analysis:**
 - **Cyclic dependencies**: Visualize circular imports and dependency loops that make refactoring dangerous
