@@ -3,7 +3,7 @@
 **What it really means to be a 10x engineer—and the tool built for that reality.**
 
 <p align="center">
-  <video src="assets/mp4/axe_axe_axe_ending.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_axe_axe_ending.mp4" width="100%" autoplay loop muted playsinline>
     axe in action
   </video>
 </p>
@@ -110,7 +110,7 @@ To demonstrate the precision advantage, we built a minimal CLI agent implementat
 ### Example 1: Basic Edit Operations
 
 <p align="center">
-  <video src="assets/mp4/axe_comparison.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_comparison.mp4" width="100%" autoplay loop muted playsinline>
     comparison
   </video>
 </p>
@@ -125,7 +125,7 @@ The difference is clear. The basic agent searches blindly, while axe-dig underst
 When asked to explain how call flow tracking works, both agents found the context—but the results were dramatically different.
 
 <p align="center">
-  <video src="assets/mp4/axe_explain_dig.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_explain_dig.mp4" width="100%" autoplay loop muted playsinline>
     call flow part 1
   </video>
 </p>
@@ -143,7 +143,7 @@ axe-dig didn't just use fewer tokens—it provided **better understanding** of h
 The difference compounds with follow-up questions. When we asked about caller information:
 
 <p align="center">
-  <video src="assets/mp4/axe_call_flow_compounding.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_call_flow_compounding.mp4" width="100%" autoplay loop muted playsinline>
     call flow part 2
   </video>
 </p>
@@ -158,7 +158,7 @@ The difference compounds with follow-up questions. When we asked about caller in
 In the mlx-lm codebase, when asked how to compute DWQ targets:
 
 <p align="center">
-  <video src="assets/mp4/axe_better_inference.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_better_inference.mp4" width="100%" autoplay loop muted playsinline>
     better inference
   </video>
 </p>
@@ -212,7 +212,7 @@ The result: **axe works brilliantly with both local and cloud models**, because 
 Here's axe running with **srswti/blackbird-she-doesnt-refuse-21b**—a 21B parameter model from our Bodega collection, running entirely locally:
 
 <p align="center">
-  <video src="assets/mp4/axe_subagents.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_subagents.mp4" width="100%" autoplay loop muted playsinline>
     local model demonstration
   </video>
 </p>
@@ -391,7 +391,7 @@ chop dfg src/db.py update_user
 **Subagents in action:**
 
 <p align="center">
-  <video src="assets/mp4/axe_subagents.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_subagents.mp4" width="100%" autoplay loop muted playsinline>
     subagents
   </video>
 </p>
@@ -438,7 +438,7 @@ pytest tests/
 Hit **Ctrl+X** to toggle between axe and your normal shell. No context switching. No juggling terminals.
 
 <p align="center">
-  <video src="assets/mp4/axe_axe_sample_toggle_shell.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_axe_sample_toggle_shell.mp4" width="100%" autoplay loop muted playsinline>
     shell toggle
   </video>
 </p>
@@ -456,7 +456,7 @@ To access our inference engine and manage the lifecycle of your models, you need
 1.  **Bodega Sensors**: Provides high-performance backend access and inference serving.
 2.  **Bodega**: The visual interface for managing models, chats, and system status.
 
-**Quick Install (macOS):**
+**Quick Install (macOS Tahoe and above, only for Apple-Silicon):**
 
 ```bash
 curl -sL https://raw.githubusercontent.com/SRSWTI/axe/main/install_sensors.sh | bash
@@ -565,7 +565,7 @@ Understanding code isn't just about reading—it's about **seeing** the structur
 The dashboard provides real-time visualization for:
 
 <p align="center">
-  <video src="assets/mp4/axe_axe_future.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_axe_future.mp4" width="100%" autoplay loop muted playsinline>
     dashboard visualization
   </video>
 </p>

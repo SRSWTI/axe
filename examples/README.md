@@ -164,7 +164,7 @@ pytest tests/test_db.py
 Hit **Ctrl+X** to seamlessly switch between axe and your normal shell:
 
 <p align="center">
-  <video src="../assets/mp4/axe_axe_sample_toggle_shell.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_axe_sample_toggle_shell.mp4" width="100%" autoplay loop muted playsinline>
     shell toggle
   </video>
 </p>
@@ -174,7 +174,7 @@ Hit **Ctrl+X** to seamlessly switch between axe and your normal shell:
 See the difference between basic grep-based agents and axe-dig's intelligent code understanding:
 
 <p align="center">
-  <video src="../assets/mp4/axe_comparison.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_comparison.mp4" width="100%" autoplay loop muted playsinline>
     comparison
   </video>
 </p>

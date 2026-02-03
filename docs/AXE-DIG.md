@@ -292,7 +292,7 @@ To demonstrate the precision advantage, we built minimal CLI agent implementatio
 When asked to explain how call flow tracking works:
 
 <p align="center">
-  <video src="../assets/mp4/axe_explain_dig.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_explain_dig.mp4" width="100%" autoplay loop muted playsinline>
     call flow explanation
   </video>
 </p>
@@ -310,7 +310,7 @@ axe-dig provided better understanding with fewer tokens.
 When asked about caller information:
 
 <p align="center">
-  <video src="../assets/mp4/axe_call_flow_compounding.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_call_flow_compounding.mp4" width="100%" autoplay loop muted playsinline>
     compounding effect
   </video>
 </p>
@@ -323,7 +323,7 @@ When asked about caller information:
 In the mlx-lm codebase, when asked how to compute DWQ targets:
 
 <p align="center">
-  <video src="../assets/mp4/axe_better_inference.mp4" width="100%" autoplay loop muted playsinline>
+  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_better_inference.mp4" width="100%" autoplay loop muted playsinline>
     better inference
   </video>
 </p>
