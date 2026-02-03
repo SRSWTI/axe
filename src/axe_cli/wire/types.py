@@ -1,0 +1,371 @@
+from __future__ import annotations
+
+import asyncio
+from typing import Any, Literal, TypeGuard, cast
+
+from kosong.chat_provider import TokenUsage
+from kosong.message import (
+    AudioURLPart,
+    ContentPart,
+    ImageURLPart,
+    TextPart,
+    ThinkPart,
+    ToolCall,
+    ToolCallPart,
+    VideoURLPart,
+)
+from kosong.tooling import (
+    BriefDisplayBlock,
+    DisplayBlock,
+    ToolResult,
+    ToolReturnValue,
+    UnknownDisplayBlock,
+)
+from kosong.utils.typing import JsonType
+from pydantic import BaseModel, Field, field_serializer, field_validator
+
+from axe_cli.tools.display import (
+    DiffDisplayBlock,
+    ShellDisplayBlock,
+    TodoDisplayBlock,
+    TodoDisplayItem,
+)
+from axe_cli.utils.typing import flatten_union
+
+
+class TurnBegin(BaseModel):
+    """
+    Indicates the beginning of a new agent turn.
+    This event must be sent before any other event in the turn.
+    """
+
+    user_input: str | list[ContentPart]
+
+
+class StepBegin(BaseModel):
+    """
+    Indicates the beginning of a new agent step.
+    This event must be sent before any other event in the step.
+    """
+
+    n: int
+    """The step number."""
+
+
+class StepInterrupted(BaseModel):
+    """Indicates the current step was interrupted, either by user intervention or an error."""
+
+    pass
+
+
+class CompactionBegin(BaseModel):
+    """
+    Indicates that a compaction just began.
+    This event must be sent during a step, which means, between `StepBegin` and the next
+    `StepBegin` or `StepInterrupted`. And, there must be a `CompactionEnd` directly following
+    this event.
+    """
+
+    pass
+
+
+class CompactionEnd(BaseModel):
+    """
+    Indicates that a compaction just ended.
+    This event must be sent directly after a `CompactionBegin` event.
+    """
+
+    pass
+
+
+class StatusUpdate(BaseModel):
+    """
+    An update on the current status of the soul.
+    None fields indicate no change from the previous status.
+    """
+
+    context_usage: float | None = None
+    """The usage of the context, in percentage."""
+    token_usage: TokenUsage | None = None
+    """The token usage statistics of the current step."""
+    message_id: str | None = None
+    """The message ID of the current step."""
+    session_input_tokens: int | None = None
+    """Total input tokens sent to the LLM in this session."""
+    session_output_tokens: int | None = None
+    """Total output tokens received from the LLM in this session."""
+    session_total_tokens: int | None = None
+    """Total tokens (input + output) in this session."""
+
+
+class SubagentEvent(BaseModel):
+    """
+    An event from a subagent.
+    """
+
+    task_tool_call_id: str
+    """The ID of the task tool call associated with this subagent."""
+    event: Event
+    """The event from the subagent."""
+    # TODO: maybe restrict the event types? to exclude approval request, etc.
+
+    @field_serializer("event", when_used="json")
+    def _serialize_event(self, event: Event) -> dict[str, Any]:
+        envelope = WireMessageEnvelope.from_wire_message(event)
+        return envelope.model_dump(mode="json")
+
+    @field_validator("event", mode="before")
+    @classmethod
+    def _validate_event(cls, value: Any) -> Event:
+        if is_wire_message(value):
+            if is_event(value):
+                return value
+            raise ValueError("SubagentEvent event must be an Event")
+
+        if not isinstance(value, dict):
+            raise ValueError("SubagentEvent event must be a dict")
+        event_type = cast(dict[str, Any], value).get("type")
+        event_payload = cast(dict[str, Any], value).get("payload")
+        envelope = WireMessageEnvelope.model_validate(
+            {"type": event_type, "payload": event_payload}
+        )
+        event = envelope.to_wire_message()
+        if not is_event(event):
+            raise ValueError("SubagentEvent event must be an Event")
+        return event
+
+
+class ApprovalResponse(BaseModel):
+    """
+    Indicates that an approval request has been resolved.
+    """
+
+    type Kind = Literal["approve", "approve_for_session", "reject"]
+
+    request_id: str
+    """The ID of the resolved approval request."""
+    response: Kind
+    """The response to the approval request."""
+
+
+class ApprovalRequest(BaseModel):
+    """
+    A request for user approval before proceeding with an action.
+    """
+
+    id: str
+    tool_call_id: str
+    sender: str
+    action: str
+    description: str
+    display: list[DisplayBlock] = Field(default_factory=list[DisplayBlock])
+    """Defaults to an empty list for backwards-compatible wire.jsonl loading."""
+
+    # Note that the above fields are just a copy of `axe_cli.soul.approval.Request`, but
+    # we cannot directly use that class here because we want to avoid dependency from Wire
+    # to Soul.
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self._future: asyncio.Future[ApprovalResponse.Kind] | None = None
+
+    def _get_future(self) -> asyncio.Future[ApprovalResponse.Kind]:
+        if self._future is None:
+            self._future = asyncio.get_event_loop().create_future()
+        return self._future
+
+    async def wait(self) -> ApprovalResponse.Kind:
+        """
+        Wait for the request to be resolved or cancelled.
+
+        Returns:
+            ApprovalResponse.Kind: The response to the approval request.
+        """
+        return await self._get_future()
+
+    def resolve(self, response: ApprovalResponse.Kind) -> None:
+        """
+        Resolve the approval request with the given response.
+        This will cause the `wait()` method to return the response.
+        """
+        future = self._get_future()
+        if not future.done():
+            future.set_result(response)
+
+    @property
+    def resolved(self) -> bool:
+        """Whether the request is resolved."""
+        return self._future is not None and self._future.done()
+
+
+class ToolCallRequest(BaseModel):
+    """
+    A tool call request routed to the Wire client for execution.
+    """
+
+    id: str
+    """The ID of the tool call."""
+    name: str
+    """The name of the tool to call."""
+    arguments: str | None
+    """Arguments of the tool call in JSON string format."""
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self._future: asyncio.Future[ToolReturnValue] | None = None
+
+    def _get_future(self) -> asyncio.Future[ToolReturnValue]:
+        if self._future is None:
+            self._future = asyncio.get_event_loop().create_future()
+        return self._future
+
+    @staticmethod
+    def from_tool_call(tool_call: ToolCall) -> ToolCallRequest:
+        return ToolCallRequest(
+            id=tool_call.id,
+            name=tool_call.function.name,
+            arguments=tool_call.function.arguments,
+        )
+
+    async def wait(self) -> ToolReturnValue:
+        """
+        Wait for the tool call to be resolved or cancelled.
+
+        Returns:
+            ToolReturnValue: The tool execution result.
+        """
+        return await self._get_future()
+
+    def resolve(self, result: ToolReturnValue) -> None:
+        """
+        Resolve the tool call with the given result.
+        This will cause the `wait()` method to return the result.
+        """
+        future = self._get_future()
+        if not future.done():
+            future.set_result(result)
+
+    @property
+    def resolved(self) -> bool:
+        """Whether the tool call is resolved."""
+        return self._future is not None and self._future.done()
+
+
+type Event = (
+    TurnBegin
+    | StepBegin
+    | StepInterrupted
+    | CompactionBegin
+    | CompactionEnd
+    | StatusUpdate
+    | ContentPart
+    | ToolCall
+    | ToolCallPart
+    | ToolResult
+    | ApprovalResponse
+    | SubagentEvent
+)
+"""Any event, including control flow and content/tooling events."""
+
+
+type Request = ApprovalRequest | ToolCallRequest
+"""Any request. Request is a message that expects a response."""
+
+type WireMessage = Event | Request
+"""Any message sent over the `Wire`."""
+
+
+_EVENT_TYPES = cast(tuple[type[Event], ...], flatten_union(Event))
+_REQUEST_TYPES = cast(tuple[type[Request], ...], flatten_union(Request))
+_WIRE_MESSAGE_TYPES = cast(tuple[type[WireMessage], ...], flatten_union(WireMessage))
+
+
+def is_event(msg: Any) -> TypeGuard[Event]:
+    """Check if the message is an Event."""
+    return isinstance(msg, _EVENT_TYPES)
+
+
+def is_request(msg: Any) -> TypeGuard[Request]:
+    """Check if the message is a Request."""
+    return isinstance(msg, _REQUEST_TYPES)
+
+
+def is_wire_message(msg: Any) -> TypeGuard[WireMessage]:
+    """Check if the message is a WireMessage."""
+    return isinstance(msg, _WIRE_MESSAGE_TYPES)
+
+
+_NAME_TO_WIRE_MESSAGE_TYPE: dict[str, type[WireMessage]] = {
+    cls.__name__: cls for cls in _WIRE_MESSAGE_TYPES
+}
+# for backwards compatibility with Wire v1
+_NAME_TO_WIRE_MESSAGE_TYPE["ApprovalRequestResolved"] = ApprovalResponse
+
+
+class WireMessageEnvelope(BaseModel):
+    type: str
+    payload: dict[str, JsonType]
+
+    @classmethod
+    def from_wire_message(cls, msg: WireMessage) -> WireMessageEnvelope:
+        typename: str | None = None
+        for name, typ in _NAME_TO_WIRE_MESSAGE_TYPE.items():
+            if issubclass(type(msg), typ):
+                typename = name
+                break
+        assert typename is not None, f"Unknown wire message type: {type(msg)}"
+        return cls(
+            type=typename,
+            payload=msg.model_dump(mode="json"),
+        )
+
+    def to_wire_message(self) -> WireMessage:
+        """
+        Convert the envelope back into a `WireMessage`.
+
+        Raises:
+            ValueError: If the message type is unknown or the payload is invalid.
+        """
+        msg_type = _NAME_TO_WIRE_MESSAGE_TYPE.get(self.type)
+        if msg_type is None:
+            raise ValueError(f"Unknown wire message type: {self.type}")
+        return msg_type.model_validate(self.payload)
+
+
+__all__ = [
+    # `WireMessage` variants
+    "TurnBegin",
+    "StepBegin",
+    "StepInterrupted",
+    "CompactionBegin",
+    "CompactionEnd",
+    "StatusUpdate",
+    "ContentPart",
+    "ToolCall",
+    "ToolCallPart",
+    "ToolResult",
+    "ApprovalResponse",
+    "SubagentEvent",
+    "ApprovalRequest",
+    "ToolCallRequest",
+    # helpers
+    "WireMessageEnvelope",
+    # `StatusUpdate`-related
+    "TokenUsage",
+    # `ContentPart` types
+    "TextPart",
+    "ThinkPart",
+    "ImageURLPart",
+    "AudioURLPart",
+    "VideoURLPart",
+    # `ToolResult`-related
+    "ToolReturnValue",
+    # `DisplayBlock` types
+    "DisplayBlock",
+    "UnknownDisplayBlock",
+    "BriefDisplayBlock",
+    "DiffDisplayBlock",
+    "TodoDisplayBlock",
+    "TodoDisplayItem",
+    "ShellDisplayBlock",
+]

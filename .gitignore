@@ -1,0 +1,32 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.pytest_cache
+# Virtual environments
+.venv
+.dig
+# Project files
+.vscode
+.env
+.env.local
+/tests_local
+uv.toml
+.idea/*
+
+# Build dependencies
+src/axe_cli/deps/bin
+src/axe_cli/deps/tmp
+
+# Generated reports
+tests_ai/report.json
+
+# nix build result
+result
+result-*
+
+# macOS files
+.DS_Store

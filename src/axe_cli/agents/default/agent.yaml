@@ -1,0 +1,30 @@
+version: 1
+agent:
+  name: ""
+  system_prompt_path: ./system.md
+  system_prompt_args:
+    ROLE_ADDITIONAL: ""
+  tools:
+    - "axe_cli.tools.multiagent:Task"
+    - "axe_cli.tools.multiagent:CreateSubagent"
+    # - "axe_cli.tools.dmail:SendDMail"
+    # - "axe_cli.tools.think:Think"
+    - "axe_cli.tools.todo:SetTodoList"
+    - "axe_cli.tools.shell:Shell"
+    - "axe_cli.tools.file:ReadFile"
+    - "axe_cli.tools.file:ReadMediaFile"
+    - "axe_cli.tools.file:Glob"
+    - "axe_cli.tools.file:Grep"
+    - "axe_cli.tools.file:WriteFile"
+    - "axe_cli.tools.file:StrReplaceFile"
+    # - "axe_cli.tools.web:SearchWeb"
+    # - "axe_cli.tools.web:FetchURL"
+    # axe-dig codebase intelligence tools (auto-indexed on startup)
+    - "axe_cli.tools.axe:CodeSearch"
+    - "axe_cli.tools.axe:CodeContext"
+    - "axe_cli.tools.axe:CodeStructure"
+    - "axe_cli.tools.axe:CodeImpact"
+  subagents:
+    coder:
+      path: ./sub.yaml
+      description: "Good at general software engineering tasks."

@@ -1,0 +1,145 @@
+from pathlib import Path
+from typing import Literal, override
+
+from kaos.path import KaosPath
+from kosong.tooling import CallableTool2, ToolError, ToolReturnValue
+from pydantic import BaseModel, Field
+
+from axe_cli.soul.agent import BuiltinSystemPromptArgs
+from axe_cli.soul.approval import Approval
+from axe_cli.tools.display import DisplayBlock
+from axe_cli.tools.file import FileActions
+from axe_cli.tools.utils import ToolRejectedError, load_desc
+from axe_cli.utils.diff import build_diff_blocks
+from axe_cli.utils.path import is_within_directory
+
+
+class Params(BaseModel):
+    path: str = Field(
+        description=(
+            "The path to the file to write. Absolute paths are required when writing files "
+            "outside the working directory."
+        )
+    )
+    content: str = Field(description="The content to write to the file")
+    mode: Literal["overwrite", "append"] = Field(
+        description=(
+            "The mode to use to write to the file. "
+            "Two modes are supported: `overwrite` for overwriting the whole file and "
+            "`append` for appending to the end of an existing file."
+        ),
+        default="overwrite",
+    )
+
+
+class WriteFile(CallableTool2[Params]):
+    name: str = "WriteFile"
+    description: str = load_desc(Path(__file__).parent / "write.md")
+    params: type[Params] = Params
+
+    def __init__(self, builtin_args: BuiltinSystemPromptArgs, approval: Approval):
+        super().__init__()
+        self._work_dir = builtin_args.AXE_WORK_DIR
+        self._approval = approval
+
+    async def _validate_path(self, path: KaosPath) -> ToolError | None:
+        """Validate that the path is safe to write."""
+        resolved_path = path.canonical()
+
+        if not is_within_directory(resolved_path, self._work_dir) and not path.is_absolute():
+            return ToolError(
+                message=(
+                    f"`{path}` is not an absolute path. "
+                    "You must provide an absolute path to write a file "
+                    "outside the working directory."
+                ),
+                brief="Invalid path",
+            )
+        return None
+
+    @override
+    async def __call__(self, params: Params) -> ToolReturnValue:
+        # TODO: checks:
+        # - check if the path may contain secrets
+        if not params.path:
+            return ToolError(
+                message="File path cannot be empty.",
+                brief="Empty file path",
+            )
+
+        try:
+            p = KaosPath(params.path).expanduser()
+
+            if err := await self._validate_path(p):
+                return err
+            p = p.canonical()
+
+            if not await p.parent.exists():
+                return ToolError(
+                    message=f"`{params.path}` parent directory does not exist.",
+                    brief="Parent directory not found",
+                )
+
+            # Validate mode parameter
+            if params.mode not in ["overwrite", "append"]:
+                return ToolError(
+                    message=(
+                        f"Invalid write mode: `{params.mode}`. "
+                        "Mode must be either `overwrite` or `append`."
+                    ),
+                    brief="Invalid write mode",
+                )
+
+            file_existed = await p.exists()
+            old_text = None
+            if file_existed:
+                old_text = await p.read_text(errors="replace")
+
+            new_text = (
+                params.content if params.mode == "overwrite" else (old_text or "") + params.content
+            )
+            diff_blocks: list[DisplayBlock] = list(
+                build_diff_blocks(
+                    str(p),
+                    old_text or "",
+                    new_text,
+                )
+            )
+
+            action = (
+                FileActions.EDIT
+                if is_within_directory(p, self._work_dir)
+                else FileActions.EDIT_OUTSIDE
+            )
+
+            # Request approval
+            if not await self._approval.request(
+                self.name,
+                action,
+                f"Write file `{p}`",
+                display=diff_blocks,
+            ):
+                return ToolRejectedError()
+
+            # Write content to file
+            match params.mode:
+                case "overwrite":
+                    await p.write_text(params.content)
+                case "append":
+                    await p.append_text(params.content)
+
+            # Get file info for success message
+            file_size = (await p.stat()).st_size
+            action = "overwritten" if params.mode == "overwrite" else "appended to"
+            return ToolReturnValue(
+                is_error=False,
+                output="",
+                message=(f"File successfully {action}. Current size: {file_size} bytes."),
+                display=diff_blocks,
+            )
+
+        except Exception as e:
+            return ToolError(
+                message=f"Failed to write to {params.path}. Error: {e}",
+                brief="Failed to write file",
+            )

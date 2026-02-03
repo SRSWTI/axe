@@ -1,0 +1,18 @@
+version: 1
+agent:
+  extend: default
+  tools:
+    - "axe_cli.tools.multiagent:Task"
+    # - "axe_cli.tools.multiagent:CreateSubagent"
+    - "axe_cli.tools.dmail:SendDMail"
+    # - "axe_cli.tools.think:Think"
+    - "axe_cli.tools.todo:SetTodoList"
+    - "axe_cli.tools.shell:Shell"
+    - "axe_cli.tools.file:ReadFile"
+    - "axe_cli.tools.file:ReadMediaFile"
+    - "axe_cli.tools.file:Glob"
+    - "axe_cli.tools.file:Grep"
+    - "axe_cli.tools.file:WriteFile"
+    - "axe_cli.tools.file:StrReplaceFile"
+    - "axe_cli.tools.web:SearchWeb"
+    - "axe_cli.tools.web:FetchURL"
