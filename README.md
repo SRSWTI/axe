@@ -2,7 +2,11 @@
 
 **What it really means to be a 10x engineer—and the tool built for that reality.**
 
-![axe in action](assets/axe_gif_axe_axe_ending.gif)
+<p align="center">
+  <video src="https://github.com/SRSWTI/axe/raw/main/assets/mp4/axe_axe_axe_ending.mp4" width="100%" autoplay loop muted playsinline>
+    axe in action
+  </video>
+</p>
 
 ---
 
@@ -105,7 +109,11 @@ To demonstrate the precision advantage, we built a minimal CLI agent implementat
 
 ### Example 1: Basic Edit Operations
 
-![comparison](assets/axe_gif_comparison.gif)
+<p align="center">
+  <video src="https://github.com/SRSWTI/axe/raw/main/assets/mp4/axe_comparison.mp4" width="100%" autoplay loop muted playsinline>
+    comparison
+  </video>
+</p>
 
 **Left:** Basic CLI agent with grep  
 **Right:** axe CLI with axe-dig
@@ -116,7 +124,11 @@ The difference is clear. The basic agent searches blindly, while axe-dig underst
 
 When asked to explain how call flow tracking works, both agents found the context—but the results were dramatically different.
 
-![call flow part 1](assets/axe_gif_explain_dig.gif)
+<p align="center">
+  <video src="https://github.com/SRSWTI/axe/raw/main/assets/mp4/axe_explain_dig.mp4" width="100%" autoplay loop muted playsinline>
+    call flow part 1
+  </video>
+</p>
 
 **Left:** Had to read the entire file after grepping for literal strings. **44,000 tokens**.  
 **Right:** axe-dig used **17,000 tokens** while also discovering:
@@ -130,7 +142,11 @@ axe-dig didn't just use fewer tokens—it provided **better understanding** of h
 
 The difference compounds with follow-up questions. When we asked about caller information:
 
-![call flow part 2](assets/axe_gif_call_flow_compounding.gif)
+<p align="center">
+  <video src="https://github.com/SRSWTI/axe/raw/main/assets/mp4/axe_call_flow_compounding.mp4" width="100%" autoplay loop muted playsinline>
+    call flow part 2
+  </video>
+</p>
 
 **Left:** Started wrong, inferred wrong, continued wrong.  
 **Right:** Had more context and better understanding from the start, leading to precise answers.
@@ -141,7 +157,11 @@ The difference compounds with follow-up questions. When we asked about caller in
 
 In the mlx-lm codebase, when asked how to compute DWQ targets:
 
-![better inference](assets/axe_gif_better_inference.gif)
+<p align="center">
+  <video src="https://github.com/SRSWTI/axe/raw/main/assets/mp4/axe_better_inference.mp4" width="100%" autoplay loop muted playsinline>
+    better inference
+  </video>
+</p>
 
 **Left:** Explained the concept generically.  
 **Right:** axe CLI actively searched the codebase and found the actual implementation.
@@ -191,7 +211,11 @@ The result: **axe works brilliantly with both local and cloud models**, because 
 
 Here's axe running with **srswti/blackbird-she-doesnt-refuse-21b**—a 21B parameter model from our Bodega collection, running entirely locally:
 
-![local model demonstration](assets/axe_gif_subagents.gif)
+<p align="center">
+  <video src="https://github.com/SRSWTI/axe/raw/main/assets/mp4/axe_subagents.mp4" width="100%" autoplay loop muted playsinline>
+    local model demonstration
+  </video>
+</p>
 
 **Hardware:** M1 Max, 64GB RAM  
 **Model:** Bodega Blackbird 21B (local inference)  
@@ -255,6 +279,56 @@ This gets encoded into **1024-dimensional embeddings**, indexed with FAISS for f
 
 ## Real-World Workflow: Debugging a Production Bug
 
+
+Let's say you need to refactor a payment processing function in a production system.
+
+**The wrong approach** (most tools):
+1. Read the entire `payment.py` file (4,200 tokens)
+2. Read related files the LLM thinks might be relevant (15,000+ tokens)
+3. Make changes based on incomplete understanding
+4. Hope nothing breaks
+
+**The axe approach**:
+
+```bash
+# 1. Understand what this function does
+chop context process_payment --project . --depth 2
+
+# Result: ~175 tokens
+# - Function signature
+# - What it calls: validate_card, stripe.charge, db.save_transaction
+# - Complexity: 3 decision points
+# - Data flow: card → card_valid → charge → transaction
+```
+
+```bash
+# 2. See who depends on this (impact analysis)
+chop impact process_payment .
+
+# Result: Shows exactly which functions call this
+# - payment.py: update_subscription (line 134)
+# - subscription.py: renew_subscription (line 45)
+# - tests/test_payment.py: 8 test functions
+```
+
+```bash
+# 3. Understand the full execution path
+chop slice src/payment.py process_payment 89
+
+# Result: Only the 6 lines that affect the return value
+# Not the entire 180-line function
+```
+
+**Now you can refactor with confidence.** You know:
+- What the function does
+- What depends on it
+- What execution paths exist
+- What data flows through it
+
+**This is what enables reliable shipping.**
+
+---
+
 **Scenario:** Users sometimes get stale data even after updates.
 
 ```bash
@@ -316,7 +390,11 @@ chop dfg src/db.py update_user
 
 **Subagents in action:**
 
-![subagents](assets/axe_gif_subagents.gif)
+<p align="center">
+  <video src="https://github.com/SRSWTI/axe/raw/main/assets/mp4/axe_subagents.mp4" width="100%" autoplay loop muted playsinline>
+    subagents
+  </video>
+</p>
 
 Spawn specialized subagents to divide and conquer complex workflows. Each subagent operates independently with its own context and tools.
 
@@ -332,8 +410,8 @@ uv pip install axe-cli
 # Or from source
 git clone https://github.com/SRSWTI/axe-cli
 cd axe-cli
-make prepare
-make build
+uv sync
+axe
 ```
 
 ### Run
@@ -359,7 +437,11 @@ pytest tests/
 ```
 Hit **Ctrl+X** to toggle between axe and your normal shell. No context switching. No juggling terminals.
 
-![shell toggle](assets/axe_gif_axe_sample_toggle_shell.gif)
+<p align="center">
+  <video src="https://github.com/SRSWTI/axe/raw/main/assets/mp4/axe_axe_sample_toggle_shell.mp4" width="100%" autoplay loop muted playsinline>
+    shell toggle
+  </video>
+</p>
 
 ---
 
@@ -464,7 +546,11 @@ Understanding code isn't just about reading—it's about **seeing** the structur
 
 The dashboard provides real-time visualization for:
 
-![dashboard visualization](assets/axe_gif_axe_future.gif)
+<p align="center">
+  <video src="https://github.com/SRSWTI/axe/raw/main/assets/mp4/axe_axe_future.mp4" width="100%" autoplay loop muted playsinline>
+    dashboard visualization
+  </video>
+</p>
 
 **Code Health Analysis:**
 - **Cyclic dependencies**: Visualize circular imports and dependency loops that make refactoring dangerous
@@ -594,10 +680,9 @@ Language auto-detected. Specify with `--lang` if needed.
 
 ## Community
 
-- **Issues**: [GitHub Issues](https://github.com/SRSWTI/axe-cli/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/SRSWTI/axe-cli/discussions)
-- **Docs**: [Full documentation](https://axe-cli.dev/docs)
+- **Issues**: [GitHub Issues](https://github.com/SRSWTI/axe/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/SRSWTI/axe/discussions)
 
 ## Acknowledgements
 
-Special thanks to [MoonshotAI/kimi-cli](https://github.com/MoonshotAI/kimi-cli) for their amazing work, which inspired our tools and the Kosong provider.
+Special thanks to [kimi-cli](https://github.com/MoonshotAI/kimi-cli) for their amazing work, which inspired our tools and the Kosong provider.
