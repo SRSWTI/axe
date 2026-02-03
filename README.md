@@ -22,7 +22,7 @@ And with that constraint in mind, they ask a different question entirely:
 
 ---
 
-## 
+## Okay i get it, what is the engineering challenge?
 
 **Idea creation is a human trait.** Ideas arise from impulsive feelings, obstacles we encounter, problems we want to solve. Creating something new is exciting, visceral, immediate.
 
@@ -47,7 +47,7 @@ They're built for the weekend hackathon, the demo video, the "move fast and brea
 
 ---
 
-## Enter axe
+## Why we built axe?
 
 We built axe because we understood this problem intimately. Our team has been maintaining production systems at scale, and we needed a tool that matched the way **real engineering** actually works.
 
@@ -61,10 +61,9 @@ It's built for the engineer who needs to:
 
 **The core insight:** To ship reliably in large codebases, you need **precise understanding**, not exhaustive reading.
 
-
 ---
 
-## How axe Works: Precision Through Intelligence
+## We believe in precision
 
 Most coding tools take the brute-force approach: dump your entire codebase into the context window and hope the LLM figures it out.
 
