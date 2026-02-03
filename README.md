@@ -63,7 +63,7 @@ It's built for the engineer who needs to:
 
 ---
 
-## We believe in precision
+## We believe in precision.
 
 Most coding tools take the brute-force approach: dump your entire codebase into the context window and hope the LLM figures it out.
 
@@ -94,57 +94,6 @@ When you need to understand a function, axe-dig gives you:
 Sometimes this means fetching **more context**, not less. When you're debugging a race condition or tracing a subtle bug through multiple layers, axe-dig will pull in the full dependency chain—because **correctness matters more than brevity**.
 
 The goal isn't minimalism. **The goal is confidence.**
-
----
-
-## A Real Example: Understanding Before Changing
-
-Let's say you need to refactor a payment processing function in a production system.
-
-**The wrong approach** (most tools):
-1. Read the entire `payment.py` file (4,200 tokens)
-2. Read related files the LLM thinks might be relevant (15,000+ tokens)
-3. Make changes based on incomplete understanding
-4. Hope nothing breaks
-
-**The axe approach**:
-
-```bash
-# 1. Understand what this function does
-chop context process_payment --project . --depth 2
-
-# Result: ~175 tokens
-# - Function signature
-# - What it calls: validate_card, stripe.charge, db.save_transaction
-# - Complexity: 3 decision points
-# - Data flow: card → card_valid → charge → transaction
-```
-
-```bash
-# 2. See who depends on this (impact analysis)
-chop impact process_payment .
-
-# Result: Shows exactly which functions call this
-# - payment.py: update_subscription (line 134)
-# - subscription.py: renew_subscription (line 45)
-# - tests/test_payment.py: 8 test functions
-```
-
-```bash
-# 3. Understand the full execution path
-chop slice src/payment.py process_payment 89
-
-# Result: Only the 6 lines that affect the return value
-# Not the entire 180-line function
-```
-
-**Now you can refactor with confidence.** You know:
-- What the function does
-- What depends on it
-- What execution paths exist
-- What data flows through it
-
-**This is what enables reliable shipping.**
 
 ---
 
