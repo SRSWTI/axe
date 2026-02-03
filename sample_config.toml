@@ -10,6 +10,7 @@ capabilities = ["thinking"]
 [models.bodega-raptor]
 provider = "bodega"
 model = "srswti/bodega-raptor-8b-mxfp4"
+alias = 
 max_context_size = 32768
 capabilities = ["thinking"]
 
