@@ -163,13 +163,13 @@ pytest tests/test_db.py
 
 Hit **Ctrl+X** to seamlessly switch between axe and your normal shell:
 
-![shell toggle](../assets/gifs/axe_axe_sample_toggle_shell.gif)
+![shell toggle](https://api.srswti.com/storage/v1/object/public/aide_public/axe/axe_axe_sample_toggle_shell.gif)
 
 ### Precision vs. Basic Search
 
 See the difference between basic grep-based agents and axe-dig's intelligent code understanding:
 
-![comparison](../assets/gifs/axe_comparison.gif)
+![comparison](https://api.srswti.com/storage/v1/object/public/aide_public/axe/axe_comparison.gif)
 
 **Left:** Basic CLI agent with grep  
 **Right:** axe with axe-dig tools
