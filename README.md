@@ -68,7 +68,7 @@ It's built for the engineer who needs to:
 | Resource | Description |
 |----------|-------------|
 | **[Installation](README.md#quick-start)** | Get up and running in seconds. |
-| **[axe-dig Engine](docs/AXE-DIG.md)** | **The secret weapon.** Deep dive into the 5-layer code intelligence engine. |
+| **[axe-dig](docs/AXE-DIG.md)** | A powerful inference needs a precise retrieval. Here you can dig with us more. |
 | **[Use Cases](examples/README.md)** | Real-world workflows: features, bugs, refactoring, exploration. |
 | **[Tools](src/axe_cli/tools/README.md)** | Complete reference for file ops, shell, and axe-dig tools. |
 | **[Agents](src/axe_cli/agents/README.md)** | Creating custom agents and subagents for parallel work. |
@@ -245,27 +245,9 @@ This gets encoded into **1024-dimensional embeddings**, indexed with FAISS for f
 
 ---
 
-## Daemon Architecture: 300x Faster Queries
-
-**The old way:** Every query spawns a new process, parses the entire codebase, builds indexes, returns result, exits. ~30 seconds.
-
-**axe-dig's daemon:** Long-running background process with indexes in RAM. ~100ms.
-
-| Command | Daemon | CLI Spawn | Speedup |
-|---------|--------|-----------|---------|
-| `search` | 0.2ms | 72ms | **302x** |
-| `extract` | 9ms | 97ms | **11x** |
-| `impact` | 0.2ms | 1,129ms | **7,374x** |
-| `structure` | 0.6ms | 181ms | **285x** |
-| **Average** | **10ms** | **1,555ms** | **155x** |
-
-**Why `impact` shows 7,374x speedup:** The CLI must rebuild the entire call graph from scratch on every invocation (~1.1 seconds). The daemon keeps the call graph in memory, so queries return in <1ms.
-
-**Incremental updates:** When you edit one function, axe-dig doesn't re-analyze the entire codebase. Content-hash-based caching with automatic dependency tracking means **10x faster incremental updates**.
-
 ## Core Capabilities
 
-### Code Intelligence (powered by axe-dig)
+### axe Operations
 
 | Tool | What it does | Use case |
 |------|-------------|----------|
