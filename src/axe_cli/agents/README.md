@@ -8,7 +8,7 @@ axe isn't limited to one main agent. You can create subagents and tasks for *any
 
 Need a dedicated security researcher? A ruthlessly precise code reviewer? A creative copywriter? axe can create and deploy specialized subagents based on your exact requirements. These subagents help you complete tasks better, faster, and more efficiently—operating with lethal precision to divide and conquer complex workflows.
 
-![subagents in action](https://api.srswti.com/storage/v1/object/public/aide_public/axe/axe_subagents.gif?v=1)
+![subagents in action](../../../assets/gifs/axe_subagents.gif)
 
 **Subagents enable parallel task execution:** Spawn multiple specialized agents to work on different aspects of a problem simultaneously, each with their own context and tools.
 

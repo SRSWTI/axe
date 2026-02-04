@@ -244,7 +244,7 @@ To demonstrate the precision advantage, we built minimal CLI agent implementatio
 
 When asked to explain how call flow tracking works:
 
-![call flow explanation](https://api.srswti.com/storage/v1/object/public/aide_public/axe/axe_explain_dig.gif?v=1)
+![call flow explanation](../assets/gifs/axe_explain_dig.gif)
 
 **Left:** Basic agent had to read the entire file after grepping for literal strings. **44,000 tokens**.  
 **Right:** axe-dig used **17,000 tokens** while discovering:
@@ -258,7 +258,7 @@ axe-dig provided better understanding with fewer tokens.
 
 When asked about caller information:
 
-![compounding effect](https://api.srswti.com/storage/v1/object/public/aide_public/axe/axe_call_flow_compounding.gif?v=1)
+![compounding effect](../assets/gifs/axe_call_flow_compounding.gif)
 
 **Left:** Started wrong, inferred wrong, continued wrong.  
 **Right:** Had more context from the start, leading to precise answers.
@@ -267,7 +267,7 @@ When asked about caller information:
 
 In the mlx-lm codebase, when asked how to compute DWQ targets:
 
-![better inference](https://api.srswti.com/storage/v1/object/public/aide_public/axe/axe_better_inference.gif?v=1)
+![better inference](../assets/gifs/axe_better_inference.gif)
 
 **Left:** Explained the concept generically.  
 **Right:** axe actively searched the codebase and found the actual implementation.
