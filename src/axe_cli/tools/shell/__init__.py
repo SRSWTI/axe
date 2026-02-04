@@ -13,7 +13,7 @@ from axe_cli.tools.display import ShellDisplayBlock
 from axe_cli.tools.utils import ToolRejectedError, ToolResultBuilder, load_desc
 from axe_cli.utils.environment import Environment
 
-MAX_TIMEOUT = 5 * 60
+MAX_TIMEOUT = 30 * 60 
 
 
 class Params(BaseModel):
@@ -23,7 +23,7 @@ class Params(BaseModel):
             "The timeout in seconds for the command to execute. "
             "If the command takes longer than this, it will be killed."
         ),
-        default=60,
+        default=300,  
         ge=1,
         le=MAX_TIMEOUT,
     )

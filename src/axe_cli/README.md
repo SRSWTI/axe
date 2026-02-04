@@ -124,7 +124,7 @@ reserved_context_size = 50000
 
 
 [mcp.client]
-tool_call_timeout_ms = 60000
+tool_call_timeout_ms = 300000  # 5 minutes
 ```
 
 ### providers
@@ -211,7 +211,7 @@ Configures web fetch service. When enabled, the FetchURL tool prioritizes using 
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| client.tool_call_timeout_ms | integer | 60000 | MCP tool call timeout (milliseconds) |
+| client.tool_call_timeout_ms | integer | 300000 | MCP tool call timeout (milliseconds) |
 
 ## Architecture
 

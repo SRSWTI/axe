@@ -124,4 +124,4 @@ reserved_context_size = 50000
 [services]
 
 [mcp.client]
-tool_call_timeout_ms = 60000
+tool_call_timeout_ms = 300000  # 5 minutes

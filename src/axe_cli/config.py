@@ -83,7 +83,7 @@ class Services(BaseModel):
 class MCPClientConfig(BaseModel):
     """MCP client configuration."""
 
-    tool_call_timeout_ms: int = 60000
+    tool_call_timeout_ms: int = 300000  # 5 minutes
     """Timeout for tool calls in milliseconds."""
 
 
