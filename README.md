@@ -194,7 +194,6 @@ Here's axe running with **srswti/blackbird-she-doesnt-refuse-21b**—a 21B param
 ![local model demonstration](assets/gifs/axe_subagents.gif)
 
 **Hardware:** M1 Max, 64GB RAM  
-**Model:** Bodega Blackbird 21B (local inference)  
 **Performance:** Spawning subagents, parallel task execution, full agentic capabilities
 
 As you can see, the capability of axe-optimized Bodega models running locally is exceptional. The precision retrieval engine means even local models can handle complex workflows efficiently—because they're not wasting compute on irrelevant context.
