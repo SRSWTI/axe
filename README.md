@@ -6,7 +6,7 @@
 
 ---
 
-## what do you mean by a "10x engineer"
+## What do you mean by a "10x engineer"
 
 The industry loves the lore of "10x engineer"—the lone genius who ships a new product in a weekend, the hacker who rewrites the entire stack in a caffeine-fueled sprint, the visionary who creates something from nothing.
 
@@ -82,7 +82,7 @@ Most coding tools take the brute-force approach: dump your entire codebase into 
 
 **This is backwards.**
 
-axe uses **axe-dig**, a 5-layer code intelligence engine that extracts **exactly what matters** for the task at hand:
+axe uses **axe-dig**, a 5-layer of retrieval that extracts **exactly what matters** for the task at hand:
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -94,8 +94,6 @@ axe uses **axe-dig**, a 5-layer code intelligence engine that extracts **exactly
 └──────────────────────────────────────────────────────────────┘
 ```
 
-**This isn't about saving tokens.** It's about **technical precision.**
-
 When you need to understand a function, axe-dig gives you:
 - The function signature and what it does
 - **Forward call graph**: What does this function call?
@@ -106,13 +104,11 @@ When you need to understand a function, axe-dig gives you:
 
 Sometimes this means fetching **more context**, not less. When you're debugging a race condition or tracing a subtle bug through multiple layers, axe-dig will pull in the full dependency chain—because **correctness matters more than brevity**.
 
-The goal isn't minimalism. **The goal is confidence.**
-
 ---
 
 ## Let's see axe in action.
 
-To demonstrate the precision advantage, we built a minimal CLI agent implementation with basic tools (grep, edit, write, shell) and compared it against the same agent with axe-dig tools.
+To demonstrate the precision advantage, we built a minimal cli agent implementation with basic tools (grep, edit, write, shell) and compared it against the same agent with axe-dig tools.
 
 **Note:** These are intentionally minimal implementations to show how phenomenal the axe-dig difference is. (If you want to try it yourself, here you go-- we named it knife since its a small implementation of axe. [`tests/smol_axe/knife.py`](tests/smol_axe/knife.py)).
 
@@ -120,8 +116,8 @@ To demonstrate the precision advantage, we built a minimal CLI agent implementat
 
 ![comparison](assets/gifs/axe_comparison.gif)
 
-**Left:** Basic CLI agent with grep  
-**Right:** axe CLI with axe-dig
+**Left:** Basic cli agent with grep  
+**Right:** basic cli with axe-dig
 
 The difference is clear. The basic agent searches blindly, while axe-dig understands code structure and dependencies.
 
@@ -148,7 +144,7 @@ The difference compounds with follow-up questions. When we asked about caller in
 **Left:** Started wrong, inferred wrong, continued wrong.  
 **Right:** Had more context and better understanding from the start, leading to precise answers.
 
-**This is why axe doesn't just optimize for token savings—it optimizes for what the code actually does and how it flows.**
+**This is why axe optimizes for what the code actually does and how it flows.**
 
 ### Example 4: Active Search vs. Passive Explanation
 
@@ -157,15 +153,17 @@ In the mlx-lm codebase, when asked how to compute DWQ targets:
 ![better inference](assets/gifs/axe_better_inference.gif)
 
 **Left:** Explained the concept generically.  
-**Right:** axe CLI actively searched the codebase and found the actual implementation.
+**Right:** axe cli actively searched the codebase and found the actual implementation.
 
-**Precision means finding the answer in your code, not explaining theory.**
+**Precision means finding the answer in your code, not explaining theory. **
 
 ---
 
-## Token Efficiency: A Consequence, Not the Goal
+## Intelligence per watt → Relevant tokens per context 
 
-Yes, axe-dig achieves **95% token reduction** compared to reading raw files.
+For Bodega, we optimized models for intelligence per watt: maximum throughput, minimum power consumption.
+
+For axe, the equivalent metric is relevant tokens per context window.
 
 | Scenario | Raw Tokens | axe-dig Tokens | Savings |
 |----------|------------|----------------|---------|
@@ -173,15 +171,8 @@ Yes, axe-dig achieves **95% token reduction** compared to reading raw files.
 | Codebase overview (26 files) | 103,901 | 11,664 | 89% |
 | Deep call chain (7 files) | 53,474 | 2,667 | 95% |
 
-But **this isn't why axe exists.**
-
-Token efficiency is a **byproduct of precision**. When you extract only the information needed to make a correct decision, you naturally use fewer tokens than dumping everything.
-
-However, axe-dig is **not a token-saving machine**. When the situation demands it—when you need to trace a complex bug through multiple layers, when you need to understand how a feature connects throughout the codebase—axe-dig will fetch **more context**, not less.
-
-**The principle:** Fetch exactly what's needed for technical precision. Sometimes that's 175 tokens. Sometimes it's 15,000 tokens. The difference is **intentionality**.
-
-Other tools are incentivized to burn tokens (they charge per token). axe is incentivized to **get the answer right**.
+Precision retrieval naturally uses fewer tokens when extracting only what's needed for correct decisions. But when you need to trace a complex bug through seven layers, axe-dig fetches 150,000 tokens—whatever it takes.
+Other tools burn tokens because they charge per token. axe optimizes for correctness.
 
 ---
 
@@ -334,9 +325,9 @@ curl -sL https://raw.githubusercontent.com/SRSWTI/axe/main/install_sensors.sh | 
 ```
 
 **Manual Setup:**
-1.  Open **BodegaOS Client** and log in with Google.
+1.  Open **BodegaOS client** and log in with Google.
 2.  Navigate to **Chat** → **Bodega Hub** → **Advanced**.
-3.  Click **Docs** to learn how to connect axe to your local Bodega Inference Engine.
+3.  click **Docs** to learn how to connect axe to your local Bodega Inference Engine.
 
 ### Bodega Inference Engine
 
