@@ -63,6 +63,19 @@ It's built for the engineer who needs to:
 
 ---
 
+## Explore axe
+
+| Resource | Description |
+|----------|-------------|
+| **[Installation](README.md#quick-start)** | Get up and running in seconds. |
+| **[axe-dig Engine](docs/AXE-DIG.md)** | **The secret weapon.** Deep dive into the 5-layer code intelligence engine. |
+| **[Use Cases](examples/README.md)** | Real-world workflows: features, bugs, refactoring, exploration. |
+| **[Tools](src/axe_cli/tools/README.md)** | Complete reference for file ops, shell, and axe-dig tools. |
+| **[Agents](src/axe_cli/agents/README.md)** | Creating custom agents and subagents for parallel work. |
+| **[Configuration](src/axe_cli/README.md)** | Providers, models, sessions, and architecture deep dive. |
+
+---
+
 ## We believe in precision.
 
 Most coding tools take the brute-force approach: dump your entire codebase into the context window and hope the LLM figures it out.
@@ -408,16 +421,7 @@ See [sample_config.toml](sample_config.toml) for more examples including OpenRou
 
 ---
 
-## Quick Links: Dive Straight In
 
-- **[Installation & Quick Start](README.md#quick-start)** - Get up and running in seconds.
-- **[Documentation Index](README.md#documentation-index)** - Detailed guide to all features.
-- **[axe-dig Engine](docs/AXE-DIG.md)** - Deep dive into the 5-layer code intelligence engine.
-- **[Common Use Cases](examples/README.md)** - Real-world workflows for refactoring and debugging.
-- **[Tool Reference](src/axe_cli/tools/README.md)** - Complete guide to built-in tools.
-- **[Agents & Subagents](src/axe_cli/agents/README.md)** - How to create custom agents and workflows.
-
----
 
 ## What's Coming
 
