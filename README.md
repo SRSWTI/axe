@@ -406,27 +406,16 @@ See [sample_config.toml](sample_config.toml) for more examples including OpenRou
 
 ---
 
-## Documentation Index
+---
 
-We've organized the docs to make them digestible. Here's what's where:
+## Quick Links: Dive Straight In
 
-### [Common Use Cases & Workflows](examples/README.md)
-Learn how to use axe for implementing features, fixing bugs, understanding unfamiliar code, and automating tasks. Includes real workflow examples for debugging, refactoring, and exploration.
-
-### [Built-in Tools](src/axe_cli/tools/README.md)
-Complete reference for all available tools: file operations, shell commands, multi-agent tasks, and the axe-dig code intelligence tools. Every tool is designed for precision, not guesswork.
-
-### [Agent Skills](src/axe_cli/skills/README.md)
-How to create and use specialized skills to extend axe's capabilities. Skills are reusable workflows and domain expertise that you can invoke with `/skill:name` commands. Turn your team's best practices into executable knowledge.
-
-### [Agents & Subagents](src/axe_cli/agents/README.md)
-Guide to creating custom agents and spawning specialized subagents for parallel work. These subagents operate with precision to divide and conquer complex workflows.
-
-### [Technical Reference](src/axe_cli/README.md)
-Deep dive into configuration (providers, models, loop control), session management, architecture, and MCP integration. Everything you need to customize axe for your workflow.
-
-### [axe-dig: Code Intelligence Engine](docs/AXE-DIG.md)
-**The secret weapon.** Complete documentation on axe-dig's 5-layer architecture, semantic search, daemon mode, and program slicing. Learn how to extract precise context while preserving everything needed for correct edits. Includes performance benchmarks, real-world debugging workflows, and the design rationale behind every choice. **This is what makes axe different from every other coding tool.**
+- **[Installation & Quick Start](README.md#quick-start)** - Get up and running in seconds.
+- **[Documentation Index](README.md#documentation-index)** - Detailed guide to all features.
+- **[axe-dig Engine](docs/AXE-DIG.md)** - Deep dive into the 5-layer code intelligence engine.
+- **[Common Use Cases](examples/README.md)** - Real-world workflows for refactoring and debugging.
+- **[Tool Reference](src/axe_cli/tools/README.md)** - Complete guide to built-in tools.
+- **[Agents & Subagents](src/axe_cli/agents/README.md)** - How to create custom agents and workflows.
 
 ---
 
