@@ -39,7 +39,7 @@ cd /path/to/your/project
 chop warm .  # Builds all 5 analysis layers
 chop semantic index .
 ```
-
+Also, 'axe-dig' and 'chop are aliases. 
 The daemon auto-starts. Indexes stay in memory. Queries return in ~100ms instead of 30 seconds.
 
 ---
@@ -234,54 +234,7 @@ chop slice src/payment.py process_payment 89
 
 **Use case:** Answering "why did this variable have this value?" in complex functions.
 
----
 
-## Real Example: Debugging a Tensor Shape Mismatch
-
-**Scenario:** Training a transformer model crashes with "RuntimeError: mat1 and mat2 shapes cannot be multiplied (32x512, 768x1024)"
-
-**Without axe-dig:**
-1. Read the 180-line forward pass method
-2. Trace every tensor transformation manually
-3. Check all layer dimensions
-4. Miss the dimension mismatch in initialization
-5. Spend 45 minutes debugging
-
-**With axe-dig:**
-
-```bash
-# 1. Find where the error occurs
-chop search "mat1 and mat2 shapes" src/
-
-# 2. Get program slice for that line
-chop slice src/model.py TransformerBlock.forward 112
-
-# Output shows only relevant code:
-# 23:  x = self.embed(input_ids)  # [batch, seq, 768]
-# 45:  attn_output = self.attention(x)  # [batch, seq, 768]
-# 67:  x = x + attn_output
-# 89:  x = self.layer_norm(x)  # [batch, seq, 768]
-# 112: output = self.fc(x.mean(dim=1))  # ← ERROR HERE
-# 134: return output
-
-# 3. Check data flow for x
-chop dfg src/model.py TransformerBlock.forward
-
-# Shows: x maintains shape [batch, seq, 768] throughout
-# x.mean(dim=1) produces [batch, 768]
-# But self.fc expects input_dim=512 (wrong!)
-
-# 4. Find where fc was initialized
-chop impact fc src/
-# Shows: self.fc = nn.Linear(512, num_classes) in __init__
-# Should be: self.fc = nn.Linear(768, num_classes)
-```
-
-**Result:** Bug found in 8 minutes. 6 lines of code instead of 180. 175 tokens instead of 21,000.
-
-The issue: `self.fc` was initialized with wrong input dimension (512 instead of 768) because someone copy-pasted from a different model architecture.
-
----
 
 ## Visual Demonstrations: axe-dig vs. Basic Tools
 
@@ -475,11 +428,12 @@ chop semantic search "save and restore session state to disk"
 
 **Why it works:** The embedding includes what the function does (calls), who uses it (called_by), how complex it is (CFG), and what data it transforms (DFG). Searching for "retry with backoff" finds functions that check exceptions and are called by retry loops (score: 0.71). Searching for "load TOML config" finds TOML parsing functions (score: 0.76). Searching for "execute shell commands" finds functions that return `(returncode, stdout, stderr)` tuples (score: 0.73).
 
-### Build the Index
+### Build the Index, if you wanna try axe-dig seperately
 
 ```bash
 # One-time build (happens automatically on first use)
 chop warm /path/to/project
+chop semantic index .
 
 # Query (uses daemon, ~100ms)
 chop semantic search "your query here" /path/to/project
@@ -664,6 +618,7 @@ chop impact handleRequest ./rust-api --lang rust
 ```bash
 # Project setup
 chop warm [path]                      # Build/update all indexes (incremental)
+chop semantic index .
 
 # Structure exploration
 chop tree [path]                       # File tree
@@ -791,7 +746,7 @@ chop daemon status --project .         # Check daemon health
 
 ---
 
-### Token Savings: 89% Reduction
+### Token Savings
 
 **What we measured:** Tokens required to understand code at different granularities, comparing raw file reads vs axe-dig structured output.
 
@@ -1080,7 +1035,8 @@ Embeddings encode what the function does, what it calls, who calls it, data flow
 
 ## Why "axe-dig"?
 
-Because you need to **dig** through massive codebases with surgical precision. Not read everything. Not guess. Extract exactly what matters and move on.
+Because you need to **dig** or chop through massive codebases with surgical precision. Not read everything. Not guess. Extract exactly what matters and move on.
+
 ## Credits & References
 
 Special thanks to [parcadei](https://github.com/parcadei) for his work.
