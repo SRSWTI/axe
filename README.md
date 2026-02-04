@@ -2,7 +2,7 @@
 
 **What it really means to be a 10x engineer—and the tool built for that reality.**
 
-![axe in action](assets/gifs/axe_gif_axe_axe_ending.gif)
+![axe in action](assets/gifs/bodega_axe.png)
 
 ---
 
