@@ -97,11 +97,11 @@ The goal isn't minimalism. **The goal is confidence.**
 
 ---
 
-## The axe-dig Difference: Side-by-Side Comparison
+## Let's see axe in action.
 
 To demonstrate the precision advantage, we built a minimal CLI agent implementation with basic tools (grep, edit, write, shell) and compared it against the same agent with axe-dig tools.
 
-**Note:** These are intentionally minimal implementations to show how phenomenal the axe-dig difference is.
+**Note:** These are intentionally minimal implementations to show how phenomenal the axe-dig difference is. (If you want to try it yourself, here you go-- we named it knife since its a small implementation of axe. [`tests/smol_axe/knife.py`](tests/smol_axe/knife.py)).
 
 ### Example 1: Basic Edit Operations
 
