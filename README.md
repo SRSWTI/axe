@@ -2,11 +2,7 @@
 
 **What it really means to be a 10x engineer—and the tool built for that reality.**
 
-<p align="center">
-  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_axe_axe_ending.mp4" width="100%" autoplay loop muted playsinline>
-    axe in action
-  </video>
-</p>
+![axe in action](assets/gifs/axe_axe_axe_ending.gif)
 
 ---
 
@@ -109,11 +105,7 @@ To demonstrate the precision advantage, we built a minimal CLI agent implementat
 
 ### Example 1: Basic Edit Operations
 
-<p align="center">
-  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_comparison.mp4" width="100%" autoplay loop muted playsinline>
-    comparison
-  </video>
-</p>
+![comparison](assets/gifs/axe_comparison.gif)
 
 **Left:** Basic CLI agent with grep  
 **Right:** axe CLI with axe-dig
@@ -124,11 +116,7 @@ The difference is clear. The basic agent searches blindly, while axe-dig underst
 
 When asked to explain how call flow tracking works, both agents found the context—but the results were dramatically different.
 
-<p align="center">
-  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_explain_dig.mp4" width="100%" autoplay loop muted playsinline>
-    call flow part 1
-  </video>
-</p>
+![call flow part 1](assets/gifs/axe_explain_dig.gif)
 
 **Left:** Had to read the entire file after grepping for literal strings. **44,000 tokens**.  
 **Right:** axe-dig used **17,000 tokens** while also discovering:
@@ -142,11 +130,7 @@ axe-dig didn't just use fewer tokens—it provided **better understanding** of h
 
 The difference compounds with follow-up questions. When we asked about caller information:
 
-<p align="center">
-  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_call_flow_compounding.mp4" width="100%" autoplay loop muted playsinline>
-    call flow part 2
-  </video>
-</p>
+![call flow part 2](assets/gifs/axe_call_flow_compounding.gif)
 
 **Left:** Started wrong, inferred wrong, continued wrong.  
 **Right:** Had more context and better understanding from the start, leading to precise answers.
@@ -157,11 +141,7 @@ The difference compounds with follow-up questions. When we asked about caller in
 
 In the mlx-lm codebase, when asked how to compute DWQ targets:
 
-<p align="center">
-  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_better_inference.mp4" width="100%" autoplay loop muted playsinline>
-    better inference
-  </video>
-</p>
+![better inference](assets/gifs/axe_better_inference.gif)
 
 **Left:** Explained the concept generically.  
 **Right:** axe CLI actively searched the codebase and found the actual implementation.
@@ -211,11 +191,7 @@ The result: **axe works brilliantly with both local and cloud models**, because 
 
 Here's axe running with **srswti/blackbird-she-doesnt-refuse-21b**—a 21B parameter model from our Bodega collection, running entirely locally:
 
-<p align="center">
-  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_subagents.mp4" width="100%" autoplay loop muted playsinline>
-    local model demonstration
-  </video>
-</p>
+![local model demonstration](assets/gifs/axe_subagents.gif)
 
 **Hardware:** M1 Max, 64GB RAM  
 **Model:** Bodega Blackbird 21B (local inference)  
@@ -390,11 +366,7 @@ chop dfg src/db.py update_user
 
 **Subagents in action:**
 
-<p align="center">
-  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_subagents.mp4" width="100%" autoplay loop muted playsinline>
-    subagents
-  </video>
-</p>
+![subagents](assets/gifs/axe_subagents.gif)
 
 Spawn specialized subagents to divide and conquer complex workflows. Each subagent operates independently with its own context and tools.
 
@@ -437,11 +409,7 @@ pytest tests/
 ```
 Hit **Ctrl+X** to toggle between axe and your normal shell. No context switching. No juggling terminals.
 
-<p align="center">
-  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_axe_sample_toggle_shell.mp4" width="100%" autoplay loop muted playsinline>
-    shell toggle
-  </video>
-</p>
+![shell toggle](assets/gifs/axe_axe_sample_toggle_shell.gif)
 
 ---
 
@@ -564,11 +532,7 @@ Understanding code isn't just about reading—it's about **seeing** the structur
 
 The dashboard provides real-time visualization for:
 
-<p align="center">
-  <video src="https://api.srswti.com/storage/v1/object/public/aide_public/axe-github/axe_axe_future.mp4" width="100%" autoplay loop muted playsinline>
-    dashboard visualization
-  </video>
-</p>
+![dashboard visualization](assets/gifs/axe_axe_future.gif)
 
 **Code Health Analysis:**
 - **Cyclic dependencies**: Visualize circular imports and dependency loops that make refactoring dangerous
