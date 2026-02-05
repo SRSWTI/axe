@@ -29,7 +29,7 @@ The following are all built-in tools in axe.
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | command | string | Command to execute |
-| timeout | int | Timeout in seconds, default 60, max 300 |
+| timeout | int | Timeout in seconds, default 300, max 1800 |
 
 ## ReadFile
 **Path:** `axe_cli.tools.file:ReadFile`  
