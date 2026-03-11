@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-VERSION="1.0.41"
+VERSION="1.0.81"
 BASE_URL="https://sensors-updates.srswti.com/darwin/arm64"
 MIN_KERNEL_VERSION=26 # Tahoe (Darwin 26)
 
@@ -72,7 +72,7 @@ curl -L -# -o "$SENSORS_PATH" "$DOWNLOAD_URL"
 SENSORS_STATUS=$?
 
 # 6. Download BodegaOS Client
-CLIENT_VERSION="1.0.126"
+CLIENT_VERSION="1.0.174"
 CLIENT_FILENAME="BodegaOS-${CLIENT_VERSION}-arm64.dmg"
 CLIENT_URL="https://assets.srswti.com/darwin/arm64/${CLIENT_FILENAME}"
 CLIENT_PATH="${DOWNLOAD_DIR}/${CLIENT_FILENAME}"
