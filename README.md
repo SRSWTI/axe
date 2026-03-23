@@ -354,8 +354,9 @@ Frontier intelligence, distilled and optimized.
 #### Axe-Turbo Series
 **Launched specifically for the Axe coding use case.** High-performance agentic coding models optimized for the Axe ecosystem.
 
-- [🤗 **axe-turbo-1b**](https://huggingface.co/srswti/axe-turbo-1b) - 1B params, 150 tok/s, sub-50ms first token. Edge-first architecture.
 - [🤗 **axe-turbo-31b**](https://huggingface.co/srswti/axe-turbo-31b) - High-capacity workloads. Exceptional agentic capabilities.
+- [🤗 **axe-stealth-37b**](https://huggingface.co/srswti/axe-stealth-37b) - Our primary axe model. 
+
 
 #### Specialized Models
 Task-specific optimization.
@@ -529,7 +530,7 @@ Language auto-detected. Specify with `--lang` if needed.
 | **Shell integration** | ❌ | ❌ | ✅ Ctrl+X toggle |
 | **Session management** | Limited | Limited | ✅ Full history + replay |
 | **Skills system** | ✅  | ✅ | ✅ Modular, extensible |
-| **Subagents** | ❌ | ❌ | ✅ Parallel task execution |
+| **Subagents** | ✅ | ✅ | ✅ Parallel task execution |
 
 ---
 
