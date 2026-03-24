@@ -1,24 +1,92 @@
 default_model = "bodega-current"
 default_thinking = true
 
+# ── Bodega models ─────────────────────────────────────────────────────────────
+#
+# These route to the local Bodega inference engine (http://localhost:44468).
+#
+# ⚠️  IMPORTANT — TWO SEPARATE CONFIG SYSTEMS:
+#
+# 1. THIS FILE (axe-cli config.toml) — what axe-cli reads.
+#    The [models.*] blocks here only accept these fields:
+#
+#      provider          = "bodega"          (required)
+#      model             = "<model-id>"       (required — the ID you gave it when loading)
+#      alias             = "<nickname>"       (optional)
+#      max_context_size  = <int>              (required)
+#      capabilities      = ["thinking", ...]  (optional)
+#
+#    That's it. Fields like tool_call_parser, reasoning_parser, continuous_batching,
+#    max_concurrency, cb_*, etc. are NOT read by axe-cli and will be silently ignored
+#    or cause a validation error if added here.
+#
+# 2. BODEGA SERVER— what the Bodega engine reads at startup.
+#    This is where all the rich model-loading options live:
+#
+#      tool_call_parser, reasoning_parser   — structured output parsers
+#      enable_auto_tool_choice              — automatic tool selection
+#      max_concurrency, queue_timeout       — concurrency and backpressure
+#      context_length                       — per-model context window
+#      continuous_batching, cb_*            — high-throughput batching engine
+#      draft_model_path, num_draft_tokens   — speculative decoding
+#      prompt_cache_size                    — KV-cache reuse for recurring prefixes
+#
+#    📖 Full reference: docs/bodega-inference-engine.md
+#       Covers loading, CB config, parsers, speculative decoding, hardware tuning.
+#    You can also set these dynamically via POST /v1/admin/load-model.
+#
+# ──────────────────────────────────────────────────────────────────────────────
+
+# "current" — proxy to whatever Bodega model is currently active.
+# Useful as a catch-all when running a single model via the CLI launcher.
 [models.bodega-current]
 provider = "bodega"
 model = "current"
 max_context_size = 32768
 capabilities = ["thinking"]
 
+# Raptor 8B — best general-purpose laptop model.
+# Load on Bodega side with: tool_call_parser="qwen3", reasoning_parser="qwen3"
 [models.bodega-raptor]
 provider = "bodega"
 model = "srswti/bodega-raptor-8b-mxfp4"
 max_context_size = 32768
 capabilities = ["thinking"]
 
+# Raptor 90M — ultra-fast edge model.
+# Load on Bodega side with: continuous_batching=true, cb_completion_batch_size=32
 [models.bodega-raptor-small]
 provider = "bodega"
 model = "srswti/bodega-raptor-90m"
 max_context_size = 32768
 capabilities = ["thinking"]
 
+# Orion 0.6B — sub-1B, ~1350 tok/s system throughput on M4 Max with continuous batching, batch =64.
+# Load on Bodega side with: continuous_batching=true, tool_call_parser="qwen3"
+[models.bodega-orion]
+provider = "bodega"
+model = "srswti/bodega-orion-0.6b"
+max_context_size = 32768
+capabilities = ["thinking"]
+
+# Centenario 21B — high-capacity production model.
+# Load on Bodega side with: max_concurrency=3, tool_call_parser="harmony"
+[models.bodega-centenario]
+provider = "bodega"
+model = "srswti/bodega-centenario-21b-mxfp4"
+max_context_size = 65536
+capabilities = ["thinking"]
+
+# axe-stealth-37b — high-capacity stealth model, qwen3_coder tool parser.
+# Load on Bodega side with: tool_call_parser="qwen3_coder", reasoning_parser="qwen3_5"
+[models.axe-stealth-37b]
+provider = "bodega"
+model = "srswti/axe-stealth-37b"
+max_context_size = 32768
+capabilities = ["thinking"]
+
+# Blackbird 21B — uncensored 21B, 128K context.
+# Load on Bodega side with: tool_call_parser="harmony", reasoning_parser="harmony"
 [models.bodega-blackbird]
 provider = "bodega"
 model = "srswti/blackbird-she-doesnt-refuse-21b"
@@ -110,6 +178,68 @@ base_url = "https://api.anthropic.com/v1"
 api_key = "sk-ant-api...."
 reasoning_key = "reasoning"
 
+# Bodega provider — local inference engine running on Apple Silicon.
+#
+# The provider block only carries connection settings. All the rich model-level
+# options (tool_call_parser, reasoning_parser, continuous_batching, max_concurrency,
+# speculative decoding, etc.) are set at model-load time via:
+#
+#   • POST /v1/admin/load-model  (dynamic, runtime)
+#   • config.yaml                (static, at server start — experimental)
+#
+# Minimal config.yaml example for the Bodega server:
+#
+#   server:
+#     host: "0.0.0.0"
+#     port: 44468
+#
+#   models:
+#     # Small model with continuous batching for throughput
+#     - model_id: "bodega-orion-0.6b"
+#       model_type: "lm"
+#       model_path: "srswti/bodega-orion-0.6b"
+#       max_concurrency: 1
+#       enable_auto_tool_choice: true
+#       tool_call_parser: "qwen3"
+#       reasoning_parser: "qwen3"
+#       continuous_batching: true
+#       cb_max_num_seqs: 256
+#       cb_prefill_batch_size: 16
+#       cb_completion_batch_size: 32
+#
+#     # Large model with prompt cache + 3 concurrency slots
+#     - model_id: "bodega-centenario-21b"
+#       model_type: "lm"
+#       model_path: "srswti/bodega-centenario-21b-mxfp4"
+#       max_concurrency: 3
+#       queue_timeout: 300
+#       queue_size: 50
+#       enable_auto_tool_choice: true
+#       tool_call_parser: "harmony"
+#       reasoning_parser: "harmony"
+#       prompt_cache_size: 10
+#
+#     # Multimodal model
+#     - model_id: "bodega-solomon-9b"
+#       model_type: "multimodal"
+#       model_path: "srswti/bodega-solomon-9b"
+#       max_concurrency: 1
+#
+#     # Raptor 8B with speculative decoding (mutually exclusive with continuous_batching)
+#     - model_id: "raptor-fast"
+#       model_type: "lm"
+#       model_path: "srswti/bodega-raptor-8b-mxfp4"
+#       enable_auto_tool_choice: true
+#       tool_call_parser: "qwen3"
+#       reasoning_parser: "qwen3"
+#       draft_model_path: "Qwen/Qwen3-0.6B-MLX-4bit"
+#       num_draft_tokens: 4
+#
+# Environment variable overrides (applied at runtime):
+#   BODEGA_BASE_URL      Override base_url
+#   BODEGA_MODEL         Override the model identifier for a specific entry
+#   BODEGA_TEMPERATURE   Set generation temperature
+#   BODEGA_MAX_TOKENS    Cap output tokens
 [providers.bodega]
 type = "bodega"
 base_url = "http://localhost:44468"

@@ -73,6 +73,7 @@ It's built for the engineer who needs to:
 | **[Tools](src/axe_cli/tools/README.md)** | Complete reference for file ops, shell, and axe-dig tools. |
 | **[Agents](src/axe_cli/agents/README.md)** | Creating custom agents and subagents for parallel work. |
 | **[Configuration](src/axe_cli/README.md)** | Providers, models, sessions, and architecture deep dive. |
+| **[Bodega Inference Engine](docs/bodega-inference-engine.md)** | Loading models with continuous batching, tool parsers, speculative decoding, and more. |
 
 ---
 
@@ -366,7 +367,11 @@ Task-specific optimization.
 
 ### Using Bodega Models
 
-Configure Bodega in `~/.axe/config.toml`:
+There are **two separate config systems** — make sure you know which one you're editing:
+
+#### 1. axe-cli config (`~/.axe/config.toml`)
+
+Tells axe which models exist and how to reach the Bodega server. The `[models.*]` blocks here only accept:
 
 ```toml
 default_model = "bodega-raptor"
@@ -374,22 +379,85 @@ default_model = "bodega-raptor"
 [providers.bodega]
 type = "bodega"
 base_url = "http://localhost:44468"  # Local Bodega server
-api_key = ""
+api_key = ""                         # Not required for local Bodega
 
 [models.bodega-raptor]
 provider = "bodega"
-model = "srswti/bodega-raptor-8b-mxfp4"
+model = "srswti/bodega-raptor-8b-mxfp4"  # must match the model_id you loaded in Bodega
 max_context_size = 32768
 capabilities = ["thinking"]
 
-[models.bodega-turbo]
+[models.axe-stealth-37b]
 provider = "bodega"
-model = "srswti/axe-turbo-31b"
+model = "srswti/axe-stealth-37b"
 max_context_size = 32768
 capabilities = ["thinking"]
 ```
 
-See [sample_config.toml](sample_config.toml) for more examples including OpenRouter, Anthropic, and OpenAI configurations.
+See [sample_config.toml](sample_config.toml) for a full example with all providers (OpenRouter, Anthropic, OpenAI, Bodega).
+
+#### 2. Bodega server config (Bodega's own `config.yaml`)
+
+This is where the **rich model-loading options** live — the ones that control how the model actually runs:
+
+| Option | What it does |
+|---|---|
+| `tool_call_parser` | Parses structured tool calls from the model output. Values: `qwen3`, `qwen3_coder`, `qwen3_5`, `harmony`, `glm4_moe`, etc. |
+| `reasoning_parser` | Extracts `<think>` blocks into `reasoning_content`. Same values as `tool_call_parser`. |
+| `enable_auto_tool_choice` | Instructs the model to automatically select the right tool. |
+| `max_concurrency` | How many parallel requests this model handler accepts before queueing. |
+| `context_length` | Maximum token context window for this specific loaded model. |
+| `continuous_batching` | High-throughput batching engine — up to 5x throughput gains for multi-user/agent workloads. |
+| `cb_max_num_seqs` | Total batch scheduler capacity (active + waiting sequences). |
+| `cb_completion_batch_size` | Max sequences generating tokens simultaneously per GPU step. |
+| `cb_prefill_batch_size` | New prompts injected into the batch per step. |
+| `draft_model_path` | Draft model for speculative decoding (faster single-user generation). |
+| `prompt_cache_size` | Slots reserved for KV-cache reuse on repeated prefixes. |
+
+> **📖 Full reference:** [`docs/bodega-inference-engine.md`](docs/bodega-inference-engine.md)
+>
+> Covers: model loading, continuous batching, speculative decoding, tool calling parsers,
+> reasoning parsers, multimodal support, context length, max concurrency, and more.
+
+Example Bodega `config.yaml` snippet for common axe model configurations:
+
+```yaml
+models:
+  # Raptor 8B — general purpose, tool calling + reasoning enabled
+  - model_id: "srswti/bodega-raptor-8b-mxfp4"
+    model_type: "lm"
+    model_path: "srswti/bodega-raptor-8b-mxfp4"
+    max_concurrency: 1
+    context_length: 32768
+    enable_auto_tool_choice: true
+    tool_call_parser: "qwen3"
+    reasoning_parser: "qwen3"
+
+  # axe-stealth-37b — primary axe model
+  - model_id: "srswti/axe-stealth-37b"
+    model_type: "multimodal"
+    model_path: "srswti/axe-stealth-37b"
+    max_concurrency: 1
+    context_length: 262144
+    enable_auto_tool_choice: true
+    tool_call_parser: "qwen3_coder"
+    reasoning_parser: "qwen3_5"
+
+  # Orion 0.6B — continuous batching for multi-agent throughput (~1400 tok/s)
+  - model_id: "srswti/bodega-orion-0.6b"
+    model_type: "lm"
+    model_path: "srswti/bodega-orion-0.6b"
+    max_concurrency: 1
+    enable_auto_tool_choice: true
+    tool_call_parser: "qwen3"
+    reasoning_parser: "qwen3"
+    continuous_batching: true
+    cb_max_num_seqs: 256
+    cb_prefill_batch_size: 16
+    cb_completion_batch_size: 32
+```
+
+See [**docs/bodega-inference-engine.md**](docs/bodega-inference-engine.md) for the complete guide including dynamic loading via `/v1/admin/load-model`, speculative decoding setup, and hardware tuning guidelines.
 
 ---
 
