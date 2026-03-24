@@ -314,21 +314,21 @@ Hit **Ctrl+X** to toggle between axe and your normal shell. No context switching
 
 ### Getting Started with Bodega
 
-To access our inference engine and manage the lifecycle of your models, you need a simple setup:
+To access the Bodega inference engine you need **BodegaOS Sensors** — the backend inference server that runs the MLX engine and serves the API on `localhost:44468`.
 
-1.  **Bodega Sensors**: Provides high-performance backend access and inference serving.
-2.  **Bodega**: The visual interface for managing models, chats, and system status.
-
-**Quick Install (macOS Tahoe and above, only for Apple-Silicon):**
+**Install (macOS Tahoe+, Apple Silicon only):**
 
 ```bash
 curl -sL https://raw.githubusercontent.com/SRSWTI/axe/main/install_sensors.sh | bash
 ```
 
-**Manual Setup:**
-1.  Open **BodegaOS client** and log in with Google.
-2.  Navigate to **Chat** → **Bodega Hub** → **Advanced**.
-3.  click **Docs** to learn how to connect axe to your local Bodega Inference Engine.
+The script auto-detects your RAM and downloads the right edition (Standard / Pro), then downloads the BodegaOS client app. After running:
+
+1. Double-click the **BodegaOS Sensors** `.dmg` → drag to Applications → launch it.
+2. Double-click the **BodegaOS** `.dmg` → drag to Applications (optional — visual model manager).
+3. Open **BodegaOS** → log in with Google → **Chat → Bodega Hub → Advanced** to browse and download models.
+
+Once Sensors is running, the inference API is live at `http://localhost:44468`. Load models via [`POST /v1/admin/load-model`](#2-bodega-server--loading-models-via-the-api) and point axe at them using your `~/.axe/config.toml`.
 
 ### Bodega Inference Engine
 
@@ -396,68 +396,86 @@ capabilities = ["thinking"]
 
 See [sample_config.toml](sample_config.toml) for a full example with all providers (OpenRouter, Anthropic, OpenAI, Bodega).
 
-#### 2. Bodega server config (Bodega's own `config.yaml`)
+#### 2. Bodega server — loading models via the API
 
-This is where the **rich model-loading options** live — the ones that control how the model actually runs:
+Bodega runs as an app on your machine. You load models into it by calling the `/v1/admin/load-model` endpoint — this is where all the rich options live:
 
 | Option | What it does |
 |---|---|
-| `tool_call_parser` | Parses structured tool calls from the model output. Values: `qwen3`, `qwen3_coder`, `qwen3_5`, `harmony`, `glm4_moe`, etc. |
-| `reasoning_parser` | Extracts `<think>` blocks into `reasoning_content`. Same values as `tool_call_parser`. |
+| `model_path` | HuggingFace repo ID or local path |
+| `model_id` | Alias used in API requests (defaults to `model_path`) — **must match `model` in your axe-cli config** |
+| `model_type` | `"lm"` for text models, `"multimodal"` for vision models |
+| `tool_call_parser` | Parses structured tool calls. Values: `qwen3`, `qwen3_coder`, `qwen3_5`, `harmony`, `glm4_moe`, etc. |
+| `reasoning_parser` | Extracts `<think>` blocks into `reasoning_content`. Same values as above. |
 | `enable_auto_tool_choice` | Instructs the model to automatically select the right tool. |
-| `max_concurrency` | How many parallel requests this model handler accepts before queueing. |
-| `context_length` | Maximum token context window for this specific loaded model. |
-| `continuous_batching` | High-throughput batching engine — up to 5x throughput gains for multi-user/agent workloads. |
+| `max_concurrency` | Parallel requests this model handler accepts before queueing. |
+| `context_length` | Token context window for this model. |
+| `continuous_batching` | High-throughput batching — up to 5x gains for multi-agent workloads. |
 | `cb_max_num_seqs` | Total batch scheduler capacity (active + waiting sequences). |
 | `cb_completion_batch_size` | Max sequences generating tokens simultaneously per GPU step. |
-| `cb_prefill_batch_size` | New prompts injected into the batch per step. |
+| `cb_prefill_batch_size` | New prompts injected into the active batch per step. |
 | `draft_model_path` | Draft model for speculative decoding (faster single-user generation). |
 | `prompt_cache_size` | Slots reserved for KV-cache reuse on repeated prefixes. |
 
 > **📖 Full reference:** [`docs/bodega-inference-engine.md`](docs/bodega-inference-engine.md)
 >
-> Covers: model loading, continuous batching, speculative decoding, tool calling parsers,
-> reasoning parsers, multimodal support, context length, max concurrency, and more.
+> Covers: all load parameters, continuous batching, speculative decoding, tool parsers,
+> reasoning parsers, multimodal support, context length, max concurrency, and hardware tuning.
 
-Example Bodega `config.yaml` snippet for common axe model configurations:
+Example load calls for common axe model configurations:
 
-```yaml
-models:
-  # Raptor 8B — general purpose, tool calling + reasoning enabled
-  - model_id: "srswti/bodega-raptor-8b-mxfp4"
-    model_type: "lm"
-    model_path: "srswti/bodega-raptor-8b-mxfp4"
-    max_concurrency: 1
-    context_length: 32768
-    enable_auto_tool_choice: true
-    tool_call_parser: "qwen3"
-    reasoning_parser: "qwen3"
+```bash
+# Raptor 8B — general purpose, tool calling + reasoning enabled
+curl -X POST http://localhost:44468/v1/admin/load-model \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model_path": "srswti/bodega-raptor-8b-mxfp4",
+    "model_id": "srswti/bodega-raptor-8b-mxfp4",
+    "model_type": "lm",
+    "context_length": 32768,
+    "max_concurrency": 1,
+    "enable_auto_tool_choice": true,
+    "tool_call_parser": "qwen3",
+    "reasoning_parser": "qwen3"
+  }'
 
-  # axe-stealth-37b — primary axe model
-  - model_id: "srswti/axe-stealth-37b"
-    model_type: "multimodal"
-    model_path: "srswti/axe-stealth-37b"
-    max_concurrency: 1
-    context_length: 262144
-    enable_auto_tool_choice: true
-    tool_call_parser: "qwen3_coder"
-    reasoning_parser: "qwen3_5"
+# axe-stealth-37b — primary axe model, with continuous batching
+curl -X POST http://localhost:44468/v1/admin/load-model \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model_path": "srswti/axe-stealth-37b",
+    "model_id": "srswti/axe-stealth-37b",
+    "model_type": "multimodal",
+    "context_length": 32768,
+    "max_concurrency": 1,
+    "enable_auto_tool_choice": true,
+    "tool_call_parser": "qwen3_coder",
+    "reasoning_parser": "qwen3_5",
+    "continuous_batching": true,
+    "cb_max_num_seqs": 256,
+    "cb_prefill_batch_size": 16,
+    "cb_completion_batch_size": 32
+  }'
 
-  # Orion 0.6B — continuous batching for multi-agent throughput (~1400 tok/s)
-  - model_id: "srswti/bodega-orion-0.6b"
-    model_type: "lm"
-    model_path: "srswti/bodega-orion-0.6b"
-    max_concurrency: 1
-    enable_auto_tool_choice: true
-    tool_call_parser: "qwen3"
-    reasoning_parser: "qwen3"
-    continuous_batching: true
-    cb_max_num_seqs: 256
-    cb_prefill_batch_size: 16
-    cb_completion_batch_size: 32
+# Orion 0.6B — continuous batching for multi-agent throughput (~900 tok/s on M4 Max)
+curl -X POST http://localhost:44468/v1/admin/load-model \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model_path": "srswti/bodega-orion-0.6b",
+    "model_id": "srswti/bodega-orion-0.6b",
+    "model_type": "lm",
+    "max_concurrency": 1,
+    "enable_auto_tool_choice": true,
+    "tool_call_parser": "qwen3",
+    "reasoning_parser": "qwen3",
+    "continuous_batching": true,
+    "cb_max_num_seqs": 256,
+    "cb_prefill_batch_size": 16,
+    "cb_completion_batch_size": 32
+  }'
 ```
 
-See [**docs/bodega-inference-engine.md**](docs/bodega-inference-engine.md) for the complete guide including dynamic loading via `/v1/admin/load-model`, speculative decoding setup, and hardware tuning guidelines.
+See [**docs/bodega-inference-engine.md**](docs/bodega-inference-engine.md) for the complete guide.
 
 ---
 
