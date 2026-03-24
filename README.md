@@ -271,8 +271,10 @@ Spawn specialized subagents to divide and conquer complex workflows. Each subage
 
 ### Install
 ```bash
-# Install axe-cli (includes axe-dig)
+# Install axe-cli (includes axe-dig) and yes use python3.13+
 uv pip install axe-cli
+cd mydir
+axe
 
 # Or from source
 git clone https://github.com/SRSWTI/axe-cli
@@ -287,15 +289,17 @@ cd /path/to/your/project
 axe
 ```
 
+Setup your `~/.axe/config.toml` (copy from [sample_config.toml](sample_config.toml)).
+
 On first run, axe-dig automatically indexes your codebase (30-60 seconds for typical projects). After that, queries are instant.
 
 ### Start Using
 ```bash
-# greet axe
+# greet
 hiii
 
 # start coding
-hey axe, can you tell me how does dwq targets are computed in mlx
+hey axe, can you tell me how does dwq targets are computed in this mlx codebase
 
 # Toggle to shell mode
 [Ctrl+X]
@@ -308,11 +312,7 @@ Hit **Ctrl+X** to toggle between axe and your normal shell. No context switching
 
 ---
 
-## Powered by SRSWTI Inc.
-
-**Building the world's fastest retrieval and inference engines.**
-
-### Getting Started with Bodega
+### Setting up the Bodega inference engine for Axe
 
 To access the Bodega inference engine you need **BodegaOS Sensors** — the backend inference server that runs the MLX engine and serves the API on `localhost:44468`.
 
@@ -322,13 +322,12 @@ To access the Bodega inference engine you need **BodegaOS Sensors** — the back
 curl -sL https://raw.githubusercontent.com/SRSWTI/axe/main/install_sensors.sh | bash
 ```
 
-The script auto-detects your RAM and downloads the right edition (Standard / Pro), then downloads the BodegaOS client app. After running:
+The script auto-detects your RAM and downloads the right edition (Standard / Pro), then downloads the BodegaOS Sensors app. After running:
 
-1. Double-click the **BodegaOS Sensors** `.dmg` → drag to Applications → launch it.
-2. Double-click the **BodegaOS** `.dmg` → drag to Applications (optional — visual model manager).
-3. Open **BodegaOS** → log in with Google → **Chat → Bodega Hub → Advanced** to browse and download models.
+1. Follow the steps
+2. Once Sensors is running, the inference API is live at `http://localhost:44468`. Load models via [`POST /v1/admin/load-model`](#2-bodega-server--loading-models-via-the-api) 
 
-Once Sensors is running, the inference API is live at `http://localhost:44468`. Load models via [`POST /v1/admin/load-model`](#2-bodega-server--loading-models-via-the-api) and point axe at them using your `~/.axe/config.toml`.
+3. Point axe at them using your `~/.axe/config.toml`. We attached a sample config as well for you to configure. Here it is [sample_config.toml](sample_config.toml)
 
 ### Bodega Inference Engine
 
