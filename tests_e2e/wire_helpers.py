@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import IO, Any
 
-TRACE_ENV = "axe_TEST_TRACE"
+TRACE_ENV = "AXE_TEST_TRACE"
 DEFAULT_TIMEOUT = 5.0
 _PATH_REPLACEMENTS: dict[str, str] = {}
 

@@ -133,3 +133,8 @@ The following operations require user approval:
 | Shell command execution | Each execution |
 | File write/edit | Each operation |
 | MCP tool calls | Each call |
+
+
+## More coming soon.
+
+from custom scraping tools, to personal headless browser with 11x less memory footprint than chrome, preferably written in zig.

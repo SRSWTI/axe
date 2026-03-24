@@ -1,12 +1,14 @@
 # axe-dig: we dig deep to find how it works
 
-**The brutal truth:** Your codebase is too big for context windows. We don't pretend otherwise.
+-These steps are already handled by axe intial setup, and axe cli. This is only for understadning the chassis for axe-dig
+
+Your codebase is too big for context windows. 
 
 Instead of dumping 100K lines and hoping for the best, axe-dig extracts exactly what matters. Structure, dependencies, data flow, execution paths—all at **95% fewer tokens** than reading raw files.
 
 ---
 
-## The Problem: ctx window, slop coders end up spending a $500 to make a chat ui 
+## The Problem: 
 
 Your production codebase: 100,000 lines.
 Claude's context window: ~200,000 tokens.

@@ -5,6 +5,8 @@ A chat provider for the Bodega inference engine, which provides
 OpenAI-compatible endpoints for local language models running on Apple Silicon.
 
 Server Address: http://localhost:44468 (default)
+By default the engine starts with the dynamic mode on, that means you can now register multiple models, with multple modalites. Refere to the docs/bpodega-inference-engine.md 
+for guide.
 """
 
 import copy

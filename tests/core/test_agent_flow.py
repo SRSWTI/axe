@@ -7,6 +7,7 @@ from axe_cli.skill.flow import Flow, FlowParseError, FlowValidationError, parse_
 from axe_cli.skill.flow.d2 import parse_d2_flowchart
 from axe_cli.skill.flow.mermaid import parse_mermaid_flowchart
 
+#TODO test the d2 flowcharts more
 
 def test_parse_flowchart_basic() -> None:
     flow = parse_mermaid_flowchart(
